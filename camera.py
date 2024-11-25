@@ -22,8 +22,8 @@ def capture_video():
         yield frame
 
     # Release the capture when done
-    cap.release()
-    cv2.destroyAllWindows()
+    #cap.release()
+    #cv2.destroyAllWindows()
 
 # Now your other functions remain the same and use the flipped frame
 def display_video_with_crosshair(cap):
@@ -52,9 +52,5 @@ def capture_frame(cap):
     # Capture a single frame from the video stream
     for frame in cap:
         return frame
-
-if __name__ == "__main__":
-    cap = capture_video()
     
-    if cap:
-        display_video_with_crosshair(cap)
+    
