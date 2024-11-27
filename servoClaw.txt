@@ -1,0 +1,38 @@
+#include <Servo.h>
+Servo servoClaw;      // Servo para controle da garra
+
+int i=0;
+void setup() {
+  // put your setup code here, to run once:
+  Serial.begin(9600);
+  servoClaw.attach(6);
+
+}
+
+void loop() {
+ if (i<45){
+  AbrirGarra();
+ }else{
+  FecharGarra();
+ }
+}
+
+void AbrirGarra () {
+while (i<45){
+  servoClaw.write(i);
+  Serial.println(i);
+  i++;
+  delay(20);
+}
+delay(2000);
+}
+
+void FecharGarra (){
+    while (i>=0){
+  servoClaw.write(i);
+  Serial.println(i);
+  i--;
+  delay(20);
+  }  
+  delay(2000);
+  }

@@ -1,6 +1,24 @@
-from hand import *
 from camera import *
+from hand import *
+from servo import *
+import serial
 import time
+
+# Configuração da porta serial (ajuste a porta para a sua configuração)
+arduino = serial.Serial(port='COM4', baudrate=9600, timeout=1)  # Substitua COM4 pela porta correta
+time.sleep(2)  # Aguarde o Arduino inicializar
+
+def enviar_comando_arduino(movements):
+    if len(movements) != 7:
+        print("Erro: A lista deve ter exatamente 7 elementos.")
+        return
+
+    # Converter lista para string no formato esperado pelo Arduino
+    comando = ','.join(map(str, movements)) + '\n'
+    arduino.write(comando.encode())
+    time.sleep(0.1)
+    resposta = arduino.readline().decode('utf-8').strip()
+    print("Resposta do Arduino:", resposta)
 
 # Inicializar o banco de dados
 init_db()
@@ -9,10 +27,12 @@ init_db()
 cap = capture_video()
 
 # Tempo de iteração
-iterate = 3
-movement = [0,0,30]
+iterate = 0.1
+movement = [0, 0, 30]
 claw = False
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                
+
+
+# Centralizar a mão
 for frame in cap:
     # Exibir vídeo com crosshair
     display_video_with_crosshair([frame])
@@ -22,12 +42,10 @@ for frame in cap:
 
     # Pausa no loop
     time.sleep(1)
-    print("centralize sua mão")
+    print("Centralize sua mão")
     # Verificar se 'q' foi pressionado
-    if cv2.waitKey(1) & 0xFF == ord('q'):
-        break
-
-
+    #if cv2.waitKey(1) & 0xFF == ord('q'):
+    break
 
 # Loop principal
 for frame in cap:
@@ -42,6 +60,9 @@ for frame in cap:
         claw = is_right_hand_open(frame)
         print(movement)
         print(claw)
+        servo_movements = calculate_servo_movements(movement, claw)
+        enviar_comando_arduino(servo_movements)
+        print(f"Servo Movements: {servo_movements}")
 
     else:
         print("No hands detected")
